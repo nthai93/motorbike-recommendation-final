@@ -23,6 +23,8 @@ wordcloud==1.9.4
 openpyxl==3.1.5
 xlsxwriter==3.2.9
 
+
 # ============= EXTRA UTILITIES =============
 tqdm==4.67.1
 pillow==11.3.0
+chardet==5.2.0
