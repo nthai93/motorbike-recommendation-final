@@ -12,6 +12,7 @@ transformers==4.57.1
 torch==2.9.0
 underthesea==8.3.0
 umap-learn==0.5.9.post2
+gensim==4.4.0    
 
 # ============= VISUALIZATION =============
 plotly==6.3.0
