@@ -165,6 +165,13 @@ def generate_auto_insight(model_name, usage_status, user_mode, user_id, df_clust
             price_col = c
             break
 
+    # --- 3️⃣ XÁC ĐỊNH PHÂN KHÚC THEO GIÁ TRUNG BÌNH (CÓ KIỂM TRA FALLBACK) ---
+    price_col = None
+    for c in ["Giá_tb_số", "Giá_clean"]:
+        if c in df_clustered.columns:
+            price_col = c
+            break
+
     if price_col:
         cluster_price_map = (
             df_clustered.groupby(cluster_col)[price_col]
@@ -177,8 +184,20 @@ def generate_auto_insight(model_name, usage_status, user_mode, user_id, df_clust
         user_cluster_rank = price_to_segment.get(user_cluster, 1)
         segment_info = cluster_segments.get(user_cluster_rank, cluster_segments[1])
     else:
-        # fallback nếu không có giá
+        # fallback nếu không có giá cụm
         segment_info = cluster_segments.get(user_cluster, cluster_segments[1])
+
+    # --- fallback 2: nếu phân khúc tính theo cụm bị lệch xa so với giá thực tế ---
+    if price_mean:
+        if price_mean < 15:
+            segment_info = cluster_segments[0]
+        elif price_mean < 25:
+            segment_info = cluster_segments[1]
+        elif price_mean < 40:
+            segment_info = cluster_segments[2]
+        else:
+            segment_info = cluster_segments[3]
+
 
     # --- 4️⃣ LÀM TRÒN GIÁ ---
     def smart_round(x): return round(x, 1) if x < 10 else round(x)
